@@ -1,0 +1,98 @@
+---
+title: "HW#3 part 2"
+output: pdf_document
+---
+
+
+```{r}
+library(readxl)
+SandwichAnts <- read_excel("SandwichAnts.xlsx")
+
+SandwichAnts$Bread   <- factor(SandwichAnts$Bread)
+SandwichAnts$Filling <- factor(SandwichAnts$Filling)
+
+model <- aov(Ants ~ Bread * Filling, data = SandwichAnts)
+summary(model)
+
+
+interaction.plot(SandwichAnts$Filling, SandwichAnts$Bread, SandwichAnts$Ants,
+                 xlab = "Filling Type",
+                 ylab = "Mean number of ants",
+                 trace.label = "Bread Type",
+                 col = c("red", "blue", "darkgreen", "purple"),
+                 lwd = 2)
+```
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(ez)
+
+MusicTime <- read_csv("MusicTme.csv")
+
+MusicTime$sqrtAccuracy <- sqrt(MusicTime$Accuracy)
+MusicTime$Music <- factor(MusicTime$Music)
+MusicTime$MusicBg <- factor(MusicTime$MusicBg)
+MusicTime$Subject <- factor(MusicTime$Subject)
+
+ggplot(MusicTime, aes(Music, sqrtAccuracy, fill = Music)) +
+  geom_boxplot()
+
+MusicTime |>
+  group_by(Music) |>
+  summarise(mean = mean(sqrtAccuracy),
+            sd = sd(sqrtAccuracy))
+```
+
+```{r}
+ggplot(MusicTime, aes(interaction(Music, MusicBg), sqrtAccuracy, fill = MusicBg)) +
+  geom_boxplot() +
+  labs(x = "Music × Musical Background", y = "sqrt(Accuracy)")
+
+MusicTime |>
+  group_by(Music, MusicBg) |>
+  summarise(mean = mean(sqrtAccuracy), sd = sd(sqrtAccuracy))
+```
+
+```{r}
+anova_result <- ezANOVA(
+  data = MusicTime,
+  dv = sqrtAccuracy,
+  wid = Subject,
+  within = .(Music),
+  between = .(MusicBg),
+  detailed = TRUE
+)
+anova_result
+```
+
+```{r}
+df <- data.frame(
+  Month = factor(c(1,2,3,4,5, 1,2,3,4,5, 1,2,3,4,5, 1,2,3,4,5, 1,2,3,4,5)),
+  Home = factor(c("H1","H1","H1","H1","H1",
+                  "H2","H2","H2","H2","H2",
+                  "H3","H3","H3","H3","H3",
+                  "H4","H4","H4","H4","H4",
+                  "H5","H5","H5","H5","H5")),
+  Brand = factor(c("A","B","C","D","E",
+                   "B","C","D","E","A",
+                   "C","D","E","A","B",
+                   "D","E","A","B","C",
+                   "E","A","B","C","D")),
+  CADR = c(162,115,149,229,328,
+           89,192,273,273,205,
+           160,164,238,175,321,
+           146,296,227,71,208,
+           241,142,103,119,333)
+)
+
+model <- aov(CADR ~ Month + Home + Brand, data = df)
+summary(model)
+
+TukeyHSD(model, "Brand")
+
+```
+
+
+

@@ -1,0 +1,76 @@
+---
+title: "HW#3"
+output: pdf_document
+---
+
+
+```{r}
+df <- data.frame(
+  day = factor(rep(1:7, each = 3)),
+  conc = factor(c(
+    2,4,6,
+    8,10,12,
+    14,2,4,
+    6,8,10,
+    12,14,2,
+    4,6,8,
+    10,12,14
+  )),
+  strength = c(
+    114,126,141,
+    120,137,145,
+    117,129,120,
+    149,150,136,
+    120,143,118,
+    119,123,130,
+    117,134,127
+  )
+)
+
+model <- aov(strength ~ day + conc, data = df)
+summary(model)
+
+# Tukey comparison
+library(multcomp)
+tukey <- glht(model, mcp(conc = "Tukey"))
+summary(tukey)
+confint(tukey)
+plot(tukey)
+```
+
+
+```{r}
+df <- data.frame(
+  Sex = factor(rep(c("Male", "Female"), each = 6)),
+  Age = factor(rep(c(3,3,5,5,7,7), times = 2)),
+  Puzzles = c(24,20,18,16,31,53, 20,8,50,36,54,66)
+)
+
+cell_means <- with(df, tapply(Puzzles, list(Sex, Age), mean))
+cell_means_with_margins <- addmargins(cell_means, FUN = mean)
+cell_means_with_margins
+
+interaction.plot(df$Age, df$Sex, df$Puzzles,
+                 ylab = "Mean puzzles solved",
+                 xlab = "Age (years)",
+                 trace.label = "Sex",
+                 col = c("blue", "red"),
+                 lwd = 2)
+
+# The lines for boys and girls aren’t parallel as they cross between ages 3 and 5. 
+# So femlae age 5 is the most out of line
+
+
+
+
+model <- aov(Puzzles ~ Sex * Age, data = df)
+summary(model)
+# we can conclude that, from the F-ratio, at the 0.05 level:
+# age has a statistically significant effect on the response
+# Sex and the Sex × Age interaction are not statistically significant at 0.05
+
+
+```
+
+
+

@@ -1,0 +1,38 @@
+---
+title: "HW#2 Q3"
+author: "Josh Cha"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+#a
+```{r}
+library(readxl)
+library(dplyr)
+
+fanbase <- read_excel("FanBase.xls")
+
+fanbase$logTime <- log(fanbase$Time)
+
+model <- aov(logTime ~ Person, data = fanbase)
+
+TukeyHSD(model)
+```
+
+#b
+```{r}
+# Use Tukey’s HSD, because it gives confidence intervals for all pairwise comparisons while controlling
+# error rates. 
+
+# Fisher’s LSD would be too liberal here. Bonferroni and Scheffé both control error rates, but they are
+# much more conservative than Tukey’s HSD. 
+```
+
+#c
+```{r}
+# It should be a contrast, because the question is asking if TS is faster than all the others combined, 
+# not just one friend versus another.
+
+# The contrast would be TS vs mean of seven other groups.
+# That requires setting up a contrast.
+```

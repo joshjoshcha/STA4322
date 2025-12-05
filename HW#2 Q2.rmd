@@ -1,0 +1,46 @@
+---
+title: "HW#2 Q2"
+author: "Josh Cha"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+# part g
+```{r}
+banana_data <- data.frame(
+  RipeningTime = c(
+    87.33, 75.5, 99.67,   # Bag
+    75.83, 34.83, 86.5,   # Wrap
+    104.17, 71.17, 122.5, # Bag+Wrap
+    51.67, 31.83, 46.17   # Neither
+  ),
+  Treatment = factor(rep(c("Bag", "Wrap", "BagWrap", "Neither"), each = 3)),
+  Type = factor(rep(c("Organic", "Nonorganic", "Mini"), times = 4))
+)
+
+banana_data
+
+model_block <- aov(RipeningTime ~ Treatment + Type, data = banana_data)
+
+summary(model_block)
+```
+
+
+# part k
+```{r}
+TukeyHSD(model_block, "Treatment")
+```
+
+## Based on the chart above, this is an interpretation of each comparison at 5%
+
+### Bag-Wrap: p = 0.14, not significant
+### Bag-Both: p = 0.54, not significant
+### Bag-Neither: p = 0.0076, significant
+### Wrap-Both: p = 0.0276, significant
+### Wrap-Neither: p = 0.13, not significant 
+### Both-Neither: p = 0.0023, significant
+
+
+
+
+
